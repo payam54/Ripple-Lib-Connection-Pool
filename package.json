@@ -1,0 +1,22 @@
+{
+  "name": "ripple-lib-connection-pool",
+  "version": "0.1.0",
+  "description": "ripple-lib Connection Pool, redundant (multi) websocket connections",
+  "dependencies": {
+  },
+  "main": "src/index.js",
+  "files": [
+    "src"
+  ],
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/WietseWind/Ripple-Lib-Connection-Pool.git"
+  },
+  "bugs": {
+    "url": "https://github.com/WietseWind/Ripple-Lib-Connection-Pool/issues"
+  },
+  "homepage": "https://github.com/WietseWind/Ripple-Lib-Connection-Pool#readme",
+  "license": "MIT",
+  "readmeFilename": "README.md"
+}
