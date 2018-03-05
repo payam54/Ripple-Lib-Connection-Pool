@@ -2,12 +2,6 @@
 
 import EventEmitter from 'events'
 
-/**
- * Todo
- *  2. Disconnect Connect: Fetch gap
- *  3. Submit and watch TX
- */
-
 class KyteConnection extends EventEmitter {
   constructor (Uri) {
     super()
@@ -97,33 +91,45 @@ class KyteConnection extends EventEmitter {
       },
       getAccountInfo (account, callback, callbackError) {
         if (Private.active && Stats.connected) {
-          api.getAccountInfo(account).then((Response) => {
-            callback(Uri, Response)
-          }).catch((e) => {
+          try {
+            api.getAccountInfo(account).then((Response) => {
+              callback(Uri, Response)
+            }).catch((e) => {
+              callbackError(Uri, e)
+            })
+          } catch (e) {
             callbackError(Uri, e)
-          })
+          }
           return true
         }
         return false
       },
       getTransaction (tx, callback, callbackError) {
         if (Private.active && Stats.connected) {
-          api.getTransaction(tx).then((Response) => {
-            callback(Uri, Response)
-          }).catch((e) => {
+          try {
+            api.getTransaction(tx).then((Response) => {
+              callback(Uri, Response)
+            }).catch((e) => {
+              callbackError(Uri, e)
+            })
+          } catch (e) {
             callbackError(Uri, e)
-          })
+          }
           return true
         }
         return false
       },
       getTransactions (account, callback, callbackError, options) {
         if (Private.active && Stats.connected) {
-          api.getTransactions(account, options).then((Response) => {
-            callback(Uri, Response)
-          }).catch((e) => {
+          try {
+            api.getTransactions(account, options).then((Response) => {
+              callback(Uri, Response)
+            }).catch((e) => {
+              callbackError(Uri, e)
+            })
+          } catch (e) {
             callbackError(Uri, e)
-          })
+          }
           return true
         }
         return false
@@ -445,7 +451,7 @@ class KyteConnectionPool extends EventEmitter {
         if (thisServer !== null) {
           tries++
           var tryNext = function () {
-            tryServer(i + 1)
+            return tryServer(i + 1)
           }
           var tryNextTimeout = setTimeout(tryNext, MAX_REQ_TRYNEXT_DURATION_SEC * 1000)
           var gotResponse = function () {
@@ -464,9 +470,18 @@ class KyteConnectionPool extends EventEmitter {
               response: Response
             })
           }, function (Uri, Err) {
-            gotResponse()
             responseErrors.push({ uri: Uri, error: Err })
-            tryNext()
+            var nextServer = tryNext()
+            if (responseErrors.length === tries && !nextServer) {
+              gotResponse()
+              __callback({
+                success: false,
+                tries: tries,
+                message: 'Tried all connected servers, no satisfactory response',
+                [type]: id,
+                errors: responseErrors
+              })
+            }
           }, options)
         } else {
           // Wait for answer, or have maxResponseTimeout kick in
@@ -479,6 +494,8 @@ class KyteConnectionPool extends EventEmitter {
           //   errors: responseErrors
           // })
         }
+
+        return thisServer
       }
 
       tryServer(0)
