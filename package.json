@@ -1,9 +1,8 @@
 {
   "name": "ripple-lib-connection-pool",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "ripple-lib Connection Pool, redundant (multi) websocket connections",
-  "dependencies": {
-  },
+  "dependencies": {},
   "main": "src/index.js",
   "files": [
     "src"
